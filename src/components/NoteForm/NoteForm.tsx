@@ -2,12 +2,16 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import css from "./NoteForm.module.css";
 
+import type { NoteTag } from "../../types/note";
+
+interface NoteFormValues {
+  title: string;
+  content: string;
+  tag: NoteTag;
+}
+
 interface NoteFormProps {
-  onSubmit: (values: {
-    title: string;
-    content: string;
-    tag: string;
-  }) => void;
+  onSubmit: (values: NoteFormValues) => void;
 }
 
 const schema = Yup.object({

@@ -24,7 +24,7 @@ export default function App() {
     setSearch(value);
   }, 500);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data } = useQuery({
     queryKey: notesKeys.list(page, search),
     queryFn: () => fetchNotes({ page, perPage: 12, search }),
   });
@@ -32,14 +32,14 @@ export default function App() {
   const deleteMutation = useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [notes], exact: true });
+      queryClient.invalidateQueries({ queryKey: notesKeys.all });
     },
   });
 
   const createMutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [notes], exact: true });
+      queryClient.invalidateQueries({ queryKey: notesKeys.all });
       setIsModalOpen(false);
     },
   });  
