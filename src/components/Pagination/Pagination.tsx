@@ -1,37 +1,38 @@
-import * as ReactPaginateModule from "react-paginate";
-import type { FC } from "react";
+import type { ComponentType } from "react";
+import ReactPaginateModule from "react-paginate";
+import type { ReactPaginateProps } from "react-paginate";
 
-type ReactPaginateComponent = React.ComponentType<Record<string, unknown>>;
+type ModuleWithDefault<T> = { default: T };
 
-const ReactPaginate =
-  (ReactPaginateModule as unknown as { default: ReactPaginateComponent })
-    .default;
-    
-  interface PaginationProps {
+const ReactPaginate = (
+  ReactPaginateModule as unknown as ModuleWithDefault<
+    ComponentType<ReactPaginateProps>
+  >
+).default;
+
+interface PaginationProps {
   pageCount: number;
   forcePage: number;
   onPageChange: (event: { selected: number }) => void;
 }
 
-const Pagination: FC<PaginationProps> = ({
+export default function Pagination({
   pageCount,
   forcePage,
   onPageChange,
-}) => {
+}: PaginationProps) {
   return (
     <ReactPaginate
       pageCount={pageCount}
       forcePage={forcePage}
       onPageChange={onPageChange}
-      previousLabel={"←"}
-      nextLabel={"→"}
-      breakLabel={"..."}
+      previousLabel="←"
+      nextLabel="→"
+      breakLabel="..."
       marginPagesDisplayed={1}
       pageRangeDisplayed={2}
-      containerClassName={"pagination"}
-      activeClassName={"active"}
+      containerClassName="pagination"
+      activeClassName="active"
     />
   );
-};
-
-export default Pagination;
+}
