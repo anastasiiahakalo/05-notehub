@@ -17,6 +17,14 @@ export default function Modal({ children, onClose }: ModalProps) {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
+  useEffect(() => {
+  document.body.style.overflow = "hidden";
+
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, []);
+
   return createPortal(
     <div className={css.backdrop} onClick={onClose}>
       <div className={css.modal} onClick={(e) => e.stopPropagation()}>
