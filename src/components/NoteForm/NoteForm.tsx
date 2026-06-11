@@ -1,7 +1,10 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import css from "./NoteForm.module.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { createNote } from "../../services/noteService";
+import { notesKeys } from "../../hooks/notesKeys";
 import type { NoteTag } from "../../types/note";
 
 interface NoteFormValues {
@@ -11,7 +14,7 @@ interface NoteFormValues {
 }
 
 interface NoteFormProps {
-  onSubmit: (values: NoteFormValues) => void;
+  onClose: () => void;
 }
 
 const schema = Yup.object({
@@ -27,19 +30,37 @@ const schema = Yup.object({
     .required(),
 });
 
-export default function NoteForm({ onSubmit }: NoteFormProps) {
+export default function NoteForm({ onClose }: NoteFormProps) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: notesKeys.all });
+      onClose();
+    },
+  });
+
+  const handleSubmit = (values: NoteFormValues) => {
+    mutation.mutate(values);
+  };
+
   return (
-    <Formik
-      initialValues={{ title: "", content: "", tag: "Todo" }}
+    <Formik<NoteFormValues>
+      initialValues={{
+        title: "",
+        content: "",
+        tag: "Todo",
+      }}
       validationSchema={schema}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       {() => (
         <Form className={css.form}>
-          <Field name="title" />
+          <Field name="title" placeholder="Title" />
           <ErrorMessage name="title" component="span" />
 
-          <Field as="textarea" name="content" />
+          <Field as="textarea" name="content" placeholder="Content" />
           <ErrorMessage name="content" component="span" />
 
           <Field as="select" name="tag">
@@ -51,6 +72,10 @@ export default function NoteForm({ onSubmit }: NoteFormProps) {
           </Field>
 
           <button type="submit">Create note</button>
+
+          <button type="button" onClick={onClose}>
+            Cancel
+          </button>
         </Form>
       )}
     </Formik>

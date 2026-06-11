@@ -3,7 +3,7 @@ import css from "./App.module.css";
 import { useDebouncedCallback } from "use-debounce";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { fetchNotes, createNote, deleteNote } from "../../services/noteService";
+import { fetchNotes, deleteNote } from "../../services/noteService";
 import { notesKeys } from "../../hooks/notesKeys";
 
 import NoteList from "../NoteList/NoteList";
@@ -37,13 +37,6 @@ export default function App() {
     },
   });
 
-  const createMutation = useMutation({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: notesKeys.all });
-      setIsModalOpen(false);
-    },
-  });  
 
 
   return (
@@ -78,7 +71,7 @@ export default function App() {
 
     {isModalOpen && (
       <Modal onClose={() => setIsModalOpen(false)}>
-        <NoteForm onSubmit={createMutation.mutate} />
+        <NoteForm onClose={() => setIsModalOpen(false)} />
       </Modal>
     )}
   </div>
