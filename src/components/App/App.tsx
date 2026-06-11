@@ -24,10 +24,11 @@ export default function App() {
     setSearch(value);
   }, 500);
 
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: notesKeys.list(page, search),
     queryFn: () => fetchNotes({ page, perPage: 12, search }),
   });
+
 
   const deleteMutation = useMutation({
     mutationFn: deleteNote,
@@ -44,35 +45,42 @@ export default function App() {
     },
   });  
 
+
   return (
-    <div className={css.app}>
-      <header className={css.toolbar}>
-        <SearchBox onChange={debouncedSearch} />
+  <div className={css.app}>
+    <header className={css.toolbar}>
+      <SearchBox onChange={debouncedSearch} />
 
-        <button onClick={() => setIsModalOpen(true)}>
-          Create note +
-        </button>
-      </header>
+      <button onClick={() => setIsModalOpen(true)}>
+        Create note +
+      </button>
+    </header>
 
-      {data?.notes?.length > 0 && (
+    {isLoading && <p>Loading...</p>}
+    {isError && <p>Error</p>}
+
+    {data && (
+      <>
         <NoteList
           notes={data.notes}
           onDelete={(id) => deleteMutation.mutate(id)}
         />
-      )}
 
-      {data?.totalPages > 1 && (
-        <Pagination
-          pageCount={data.totalPages}
-          onPageChange={(p) => setPage(p)}
-        />
-      )}
+        {data.totalPages > 1 && (
+          <Pagination
+              page={page}
+              totalPages={data.totalPages}
+              onChange={setPage}
+          />
+        )}
+      </>
+    )}
 
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <NoteForm onSubmit={createMutation.mutate} />
-        </Modal>
-      )}
-    </div>
-  );
+    {isModalOpen && (
+      <Modal onClose={() => setIsModalOpen(false)}>
+        <NoteForm onSubmit={createMutation.mutate} />
+      </Modal>
+    )}
+  </div>
+);
 }

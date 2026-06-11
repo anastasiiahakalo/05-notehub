@@ -1,15 +1,23 @@
-import ReactPaginate from "react-paginate";
-
 interface Props {
-  pageCount: number;
-  onPageChange: (page: number) => void;
+  page: number;
+  totalPages: number;
+  onChange: (page: number) => void;
 }
 
-export default function Pagination({ pageCount, onPageChange }: Props) {
+export default function Pagination({ page, totalPages, onChange }: Props) {
   return (
-    <ReactPaginate
-      pageCount={pageCount}
-      onPageChange={(e) => onPageChange(e.selected + 1)}
-    />
+    <div style={{ display: "flex", gap: 8 }}>
+      {Array.from({ length: totalPages }, (_, i) => (
+        <button
+          key={i}
+          onClick={() => onChange(i + 1)}
+          style={{
+            fontWeight: page === i + 1 ? "bold" : "normal",
+          }}
+        >
+          {i + 1}
+        </button>
+      ))}
+    </div>
   );
 }
