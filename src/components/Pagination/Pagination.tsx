@@ -1,23 +1,37 @@
-interface Props {
-  page: number;
-  totalPages: number;
-  onChange: (page: number) => void;
+import * as ReactPaginateModule from "react-paginate";
+import type { FC } from "react";
+
+type ReactPaginateComponent = React.ComponentType<Record<string, unknown>>;
+
+const ReactPaginate =
+  (ReactPaginateModule as unknown as { default: ReactPaginateComponent })
+    .default;
+    
+  interface PaginationProps {
+  pageCount: number;
+  forcePage: number;
+  onPageChange: (event: { selected: number }) => void;
 }
 
-export default function Pagination({ page, totalPages, onChange }: Props) {
+const Pagination: FC<PaginationProps> = ({
+  pageCount,
+  forcePage,
+  onPageChange,
+}) => {
   return (
-    <div style={{ display: "flex", gap: 8 }}>
-      {Array.from({ length: totalPages }, (_, i) => (
-        <button
-          key={i}
-          onClick={() => onChange(i + 1)}
-          style={{
-            fontWeight: page === i + 1 ? "bold" : "normal",
-          }}
-        >
-          {i + 1}
-        </button>
-      ))}
-    </div>
+    <ReactPaginate
+      pageCount={pageCount}
+      forcePage={forcePage}
+      onPageChange={onPageChange}
+      previousLabel={"←"}
+      nextLabel={"→"}
+      breakLabel={"..."}
+      marginPagesDisplayed={1}
+      pageRangeDisplayed={2}
+      containerClassName={"pagination"}
+      activeClassName={"active"}
+    />
   );
-}
+};
+
+export default Pagination;
